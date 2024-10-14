@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Caixa</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="estiloestoque.css">
+</head>
+<body>
+    <header class="header-full">
+        <div class="header-content">
+            <div style="width: 100%; color: aliceblue; text-align: center;">
+                <h1>Sistema de estoque</h1>
+            </div>
+            <div class="product-registration">
+                <p>Cadastrar Produto</p>
+                <input type="text" id="product-name" placeholder="Nome do Produto">
+                <input type="number" id="product-value" placeholder="Valor do Produto">
+                <input type="number" id="product-quantity" placeholder="Quantidade">
+                <button onclick="registerProduct()">Cadastrar Produto</button>
+            </div>
+
+            <div style="width: 100%; display: flex; justify-content: center;">
+                <a href="caixa.html">
+                    <button style="background-color: red; height: 60px; width: 200px; color: aliceblue;">abrir o caixa</button>
+                </a>
+            </div>
+    </header>
+    <main id="main-content" class="main-full">
+       
+            <div style="width: 100%; background-color: rgba(236, 8, 8, 0.726); color: rgb(255, 255, 255); text-align: center;">
+                <h1>Histórico</h1>
+            </div>
+        
+        <div class="historico">
+            <div class="conteudo_historico"></div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        let historyData = JSON.parse(localStorage.getItem('historyData')) || [];
+    
+        function registerProduct() {
+            const productName = document.getElementById('product-name').value;
+            const productValue = parseFloat(document.getElementById('product-value').value);
+            let productQuantity = parseInt(document.getElementById('product-quantity').value);
+    
+            if (!productName || isNaN(productValue) || isNaN(productQuantity)) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+    
+            // Define productQuantity como 1 se for 0 ou NaN
+            if (isNaN(productQuantity) || productQuantity <= 0) {
+                productQuantity = 1;
+            }
+    
+            const data = {
+                productName,
+                productValue,
+                productQuantity
+            };
+            historyData.push(data);
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+            updateHistory();
+            clearProductInputs();
+        }
+    
+        function updateHistory() {
+            const historyContent = document.querySelector('.conteudo_historico');
+            historyContent.innerHTML = '';
+            historyData.forEach((entry, index) => {
+                const entryHtml = `
+                    <div class="historico-entry">
+                        <p>Produto: ${entry.productName}</p>
+                        <p>Valor do Produto: ${entry.productValue.toFixed(2)}</p>
+                        <p>Quantidade: ${entry.productQuantity}</p>
+                        <button style="background-color: red; color: white;" onclick="deleteEntry(${index})">Excluir</button>
+                    </div>
+                `;
+                historyContent.innerHTML += entryHtml;
+            });
+        }
+    
+        function deleteEntry(index) {
+            historyData.splice(index, 1);
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+            updateHistory();
+        }
+    
+        function clearProductInputs() {
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-value').value = '';
+            document.getElementById('product-quantity').value = '';
+        }
+    
+        function showInstallments() {
+            const paymentMethod = document.getElementById('payment-method').value;
+            const installmentsSection = document.getElementById('installments-section');
+            if (paymentMethod === 'credito') {
+                installmentsSection.style.display = 'block';
+            } else {
+                installmentsSection.style.display = 'none';
+                document.getElementById('installments').value = '';
+            }
+        }
+    
+        window.onload = function() {
+            updateHistory();
+        };
+    </script>
+s    
+</body>
+</html>
