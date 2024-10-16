@@ -15,6 +15,7 @@
             <div class="product-registration">
                 <p>Cadastrar Produto</p>
                 <input type="text" id="product-name" placeholder="Nome do Produto">
+                <div id="resultado-pesquisa"></div>
                 <input type="number" id="quantidade-product" placeholder="Quantidade de Produto">
                 <button onclick="procurarProduct()">Procurar Produto</button>
             </div>
@@ -210,6 +211,35 @@
         window.onload = function() {
             loadFromLocalStorage();
         }
+
+        function buscarProdutosPorNome() {
+    const productName = document.getElementById('product-name').value.toLowerCase();
+    const savedData = JSON.parse(localStorage.getItem('historyData')) || [];
+    
+    const produtosEncontrados = savedData.filter(item => item.productName.toLowerCase().includes(productName));
+    
+    const resultadoPesquisa = document.getElementById('resultado-pesquisa');
+    resultadoPesquisa.innerHTML = ''; // Limpa resultados anteriores
+    
+    if (produtosEncontrados.length > 0) {
+        produtosEncontrados.forEach(produto => {
+            const produtoHtml = `
+                <div class="produto-opcao">
+                    <p>Nome: ${produto.productName}</p>
+                    <p>Quantidade: ${produto.productQuantity}</p>
+                    <p>Valor Unitário: ${produto.productUnitValue}</p>
+                </div>
+            `;
+            resultadoPesquisa.innerHTML += produtoHtml;
+        });
+    } else {
+        resultadoPesquisa.innerHTML = '<p>Nenhum produto encontrado.</p>';
+    }
+}
+
+// Adicione esta div no seu HTML para exibir os resultados da pesquisa
+// <div id="resultado-pesquisa"></div>
+
     </script>
 </body>
 </html>
